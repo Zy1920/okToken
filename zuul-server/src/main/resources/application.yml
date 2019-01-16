@@ -1,0 +1,75 @@
+spring:
+  application:
+    name: zuul-server
+
+server:
+  port: 8088
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://127.0.0.1:8761/eureka/
+    registry-fetch-interval-seconds: 5
+  instance:
+    lease-expiration-duration-in-seconds: 15
+    lease-renewal-interval-in-seconds: 5
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: "*"
+#  endpoint:
+#    health:
+#      show-details: always
+
+feign:
+  httpclient:
+    enabled: false
+  okhttp:
+    enabled: true
+
+logging:
+  level:
+    root: info
+    com.cloud: debug
+  file: logs/${spring.application.name}.log
+
+host:
+  connect-timeout-millis: 10000
+  socket-timeout-millis: 60000
+  add-proxy-headers: true
+  ribbon:
+    eager-load:
+      enabled: true
+ribbon:
+  ReadTimeout: 10000
+  ConnectTimeout: 10000
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000
+
+
+zuul:
+  host:
+    connect-timeout-millis: 600000
+    socket-timeout-millis: 600000
+  sslHostnameValidationEnabled: false
+  routes:
+    userapi:
+      path: /user/**
+      serviceId: okToken-user-server
+    marketapi:
+      path: /market/**
+      serviceId: okToken-market-server
+    tradeapi:
+      path: /trade/**
+      serviceId: okToken-trade-server
+    financialapi:
+      path: /financial/**
+      serviceId: okToken-financial-server
